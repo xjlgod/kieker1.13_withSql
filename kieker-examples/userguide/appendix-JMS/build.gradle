@@ -1,0 +1,46 @@
+apply plugin: 'application'
+apply plugin: 'eclipse'
+
+dependencies {
+	compile fileTree('lib') {
+		include "*.jar"
+		// we use the wildcard above because we need to include 
+		// libraries that depend on the actual JMS product used
+		//include "kieker-*-emf.jar"
+		//include "commons-logging-*.jar"
+  }
+}
+
+def monitoringConfigurationActiveMQ = 'META-INF/kieker.monitoring.properties-activemq'
+
+// Simplify the JAR's file name
+archivesBaseName = 'JMSMonitoringAnalysis'
+version = ''
+	
+sourceSets.main.java.srcDirs = ['src']
+sourceSets.main.resources.srcDirs = ['src-resources']
+
+def monitoringConfiguration = {
+  main = 'kieker.examples.userguide.appendixJMS.BookstoreStarter'
+  classpath = sourceSets.main.runtimeClasspath
+  
+  jvmArgs = ['-Dlog4j.configuration=META-INF/log4j.properties', '-Dorg.apache.activemq.SERIALIZABLE_PACKAGES=*']
+}
+
+task runMonitoringActiveMQ(type: JavaExec) {
+  configure monitoringConfiguration
+  jvmArgs += "-Dkieker.monitoring.configuration=${monitoringConfigurationActiveMQ}"
+}
+
+def analysisConfiguration = {
+  main = 'kieker.examples.userguide.appendixJMS.JMSAnalysisStarter'
+	classpath = sourceSets.main.runtimeClasspath
+  
+  jvmArgs = ['-Dlog4j.configuration=META-INF/log4j.properties', '-Dorg.apache.activemq.SERIALIZABLE_PACKAGES=*']
+}
+
+task runAnalysisActiveMQ(type: JavaExec) {
+  configure analysisConfiguration
+	args = ['org.apache.activemq.jndi.ActiveMQInitialContextFactory', 'tcp://127.0.0.1:61616/', 'queue1']
+}
+

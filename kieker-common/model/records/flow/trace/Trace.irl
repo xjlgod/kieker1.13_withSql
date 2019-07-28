@@ -1,0 +1,31 @@
+package kieker.common.record.flow.trace
+
+import kieker.common.record.flow.AbstractEvent
+import kieker.common.record.flow.ITraceRecord
+import kieker.common.record.flow.IFlowRecord
+
+@author 'Jan Waller' @since '1.5'
+abstract entity AbstractTraceEvent extends AbstractEvent : ITraceRecord
+
+@author 'Jan Waller' @since '1.5'
+entity ConstructionEvent extends AbstractTraceEvent {
+	string classSignature = ""
+	int objectId = 0
+}
+
+@author 'Jan Waller'
+@since '1.5'
+entity TraceMetadata : IFlowRecord {
+	const long NO_PARENT_TRACEID = -1
+	const int NO_PARENT_ORDER_INDEX = -1
+	const string NO_SESSION_ID = "<no-session-id>"
+	const string NO_HOSTNAME = "<default-host>"
+	
+ 	changeable long traceId = 0
+ 	long threadId = 0
+ 	string sessionId = NO_SESSION_ID
+ 	string hostname = NO_HOSTNAME
+ 	long parentTraceId = NO_PARENT_TRACEID
+ 	int parentOrderId = NO_PARENT_ORDER_INDEX
+ 	transient auto-increment int nextOrderId = 0 
+}

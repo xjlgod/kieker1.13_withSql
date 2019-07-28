@@ -1,0 +1,5 @@
+apply plugin: 'eclipse'
+
+dependencies {
+	compile resolveLibrary('**/checkstyle-*/**/*.jar')
+}

@@ -1,0 +1,257 @@
+This document summarizes changes made in all releases starting with 0.90.
+
+Starting with version 1.4, the Kieker ticket system (accessible via 
+http://kieker-monitoring.net) contains details on the changes.
+
+Please refer to the Kieker User Guide for details on using Kieker.
+
+* 1.13 (October 4, 2017)
+- New features (selection)
+  - Kafka writer and reader
+  - Records provide API access to property names
+  - SpringBoot REST interceptors
+- Improvements and refactorings
+  - Performance improvements in the monitoring component (including 
+    API changes to the writers)
+  - Refined architecture including minor (internal) API changes 
+    to records
+  - Library updates
+- Dropped features
+  - Database (SQL) writer and reader
+  - Explicit support for HornetQ and OpenJMS 
+    (may be still be used via the JMS API)
+- Java 7 (or higher) required
+- Infrastructure 
+  - Migration to Atlassian Cloud (Confluence and Jira)
+  - Jenkins-based continuous delivery pipeline integrated with GitHub
+  - Docker containers for examples (JPetStore livedemo, RSS example),
+    build containers
+- Bug fixes and improvements to code, performance, tests, 
+  documentation, examples
+
+* 1.12 (October 1, 2015)
+- New features (selection)
+  - Monitoring of system-level statistics based on the Sigar API:
+    - New probes and corresponding records for network and 
+      disk usage; load average
+    - New servlet filter to start the Sigar-based samplers 
+      (previously only a servlet for CPU, memory/swap)
+    - Standalone tool for resource monitoring
+  - New reader and writer for Advanced Message Queuing Protocol
+    (AMQP)
+  - Probes for collecting distributed traces in REST-based 
+    environments with Jersey.
+  - Example for monitoring traces in distributed applications 
+    based on the RESTful Netflix OSS RSS Reader Recipe,
+    provided via container-based virtualization (Docker).
+- Bug fixes and improvements to code, performance, tests, 
+  documentation, examples
+
+* 1.11 (April 1, 2015)
+- New features (selection)
+  - HTTP PUT/REST API for data bridge
+  - Trace analysis: automatic repair of broken traces
+  - Improved OPAD examples
+- Migrated to Gradle for build automation
+- Bug fixes and improvements to code, performance, tests, 
+  documentation, examples
+
+* 1.10 (October 15, 2014)
+- New features (selection)
+  - Instrumentation record language 
+  - Various samplers to collect data from the JVM       
+  - Major refinements and extensions to TSLib and OPAD 
+    (e.g., various forecasters based on R)
+  - Filter for session reconstruction
+  - Updateable filters
+  - Additional examples
+- Support for Java 1.8 (via AspectJ)
+- Bug fixes and improvements to code, performance, tests, build scripts, 
+  documentation, examples
+  
+* 1.9 (April 16, 2014)
+- New features (selection)
+  - Binary monitoring writers using Java NIO 
+  - Support for DiSL probes
+  - Writer for exporting records to the ExplorViz tool for online
+    trace visualization
+  - Trace Analysis GUI (beta)
+  - TSLib: time series analysis library (beta)
+  - OPAD: online performance anomaly detection filters (beta)
+  - Live demo part of the Java EE example 
+  - TraceAnalysis: coloring of components and operations based on 
+    response times
+- API change:
+  - Kieker's AspectJ weaver Jar now uses a default aop.xml when 
+    no other aop.xml found. Should be disabled in multi-classloader 
+    environments (Java EE, OSGi, etc.) by using a new configuration 
+    parameter; alternatively, AspectJ's weaver agent can be used.
+- Bug fixes and improvements to code, performance, tests, build scripts, 
+  documentation, examples
+- Improvements to the WebGUI (see separate `HISTORY` file)
+
+* 1.8 (October 16, 2013)
+- New features (selection)
+  - Data Bridge: Facility to connect Kieker's Java core with other platforms
+  - New reader plugin that provides the current system time in regular intervals
+  - New TCP writer and reader
+  - Acceleration/slow-down factor for real-time replayer
+- Minor changes to the record API 
+  - Additional method for binary (de)serialization
+  - `TYPES` field now public 
+  - Many record types no longer `final` (eases custom extensions)
+- Bug fixes and improvements to code, performance, tests, build scripts, 
+  documentation, examples
+- Various improvements to the WebGUI (see separate `HISTORY` file)
+
+* 1.7 (April 17, 2013)
+- Major changes
+  - Adaptive monitoring: extended set of (de)activation patterns to 
+    support adaptive monitoring for custom probes. Before: limited 
+    to (de)activate monitoring for operation signature patterns.
+  - New file system writers supporting (ZIP) compression
+  - Minor modifications to the Kieker.Analysis API:
+    1. Removed the `register` methods. Registration now implicit by 
+       passing context information to the plugin constructors. 
+       A legacy mode for the previous API is included in this version.
+    2. Analysis projects can now have properties available to the plugins.
+  - Bug fixes and improvements to code, tests, documentation, examples
+  - Various improvements to the WebGUI (see separate `HISTORY` file)
+- Infrastructure:
+  - Kieker releases now also published via Maven Central Repository
+    (http://search.maven.org/)
+  - Completely redesigned web site: http://kieker-monitoring.net
+  - Live demo at http://demo.kieker-monitoring.net
+
+* 1.6 (October 17, 2012)
+- Major changes
+  - Web-based UI for editing and running analysis projects (beta version)
+  - Adaptive monitoring: (De)activate monitoring on method signature level 
+    at runtime based on signature patterns
+  - Restructured and extended graph/visualization filters (trace coloring, 
+    tooltips etc.)
+  - Log rotation for file system writer
+  - Logging API: SLF4J support and logger selection via JVM argument
+  - Many new AspectJ-based probes for detailed event-based tracing
+  - Refactored realtime replayer based on new re-usable filters (realtime delay,
+    record logger etc.)
+  - Java EE example: Now included in core binary release archive and based 
+    on MyBatis JPetStore deployed to Jetty server
+  - Definition of configuration properties and default values for analysis 
+    plugins and repositories now annotation-based
+  - Removed legacy control servlet (JMX interface should be used instead)
+- Quality
+  - Bug fixes
+  - Added a number of (JUnit) tests
+
+* 1.5 (April 13, 2012)
+- Major new features
+  - Completely reworked pipe-and-filter framework in Kieker.Analysis
+   - Use of Java annotations to specify plugins, repositories, 
+     input/output ports etc.
+   - Support for multiple readers
+   - Load and save configurations from/to .kax files 
+     (based on a new meta-model specified using Ecore)
+   - Basic tools to execute/visualize .kax files
+  - New database writer/reader supporting arbitrary record types
+  - Support for immutable record types
+  - New binary filesystem writer/reader
+  - New print stream writer
+  - New re-usable filters (tee, counting, timestamp etc.)
+  - Complete method signatures used in probes/records for control-flow tracing
+  - New record types/probes for event-based tracing 
+    (method call, entry, exit etc.)
+  - Re-enabled Java 5 support
+  - Removed dependency to commons.logging
+  - Additional Kieker Jar usable as javaagent for AspectJ-based instrumentation
+- Quality
+  - Bug fixes
+  - Added a number of (JUnit) tests
+
+* 1.4 (October 14, 2011)
+- Features:
+  - JMX monitoring reader and writer
+  - JMS support for ActiveMQ and HornetQ (in addition to OpenJMS)
+  - Enable/disable flushing of FS Writers
+  - Configurable shutdown delay for asynchronous writers
+  - Configurable Servlet parameters for periodic samplers
+  - Direct support for asynchronous analysis
+  - Java 5 no longer supported
+  - Refined Microbenchmark (+ SPEC macro-benchmark configuration)
+- Bug fixes/Improvements to sources and documentation
+  - Code quality
+    - Code cleanup
+    - Coding conventions
+    - Javadoc cleanup
+    - Integrated static analysis tools Findbugs, Checkstyle, and PMD
+    - Integrated test coverage tool
+    - Resolved Java warnings 
+  - Licensing
+    - Added license headers to source files
+    - Added licenses for third-party libs 
+  - Documentation
+    - Extended Java EE Servlet container example to Windows
+    - Fixes in user guide (examples)
+    - Extended JMS example to ActiveMQ and HornetQ (including Windows)
+  - Release archives
+    - Eclipse project files (Kieker project can be imported without copying the 
+      default files) 
+
+* 1.3 (May 19, 2011)
+- Added support for periodic samplers
+- Added support for monitoring system-level statistics based on the Sigar API
+- MonitoringController no longer restricted to singleton instance
+- Added support for custom time sources
+- Improved configuration management
+- Added named pipe reader/writer (for passing monitoring records directly within 
+  same JVM)
+- MonitoringController accessible as JMX MBean
+- API changes
+  - The format of the kieker.monitoring.properties changed!
+  - Custom writers will need to be adjusted to a changed interface
+  - Minor changes in the MonitoringController interface
+
+* 1.2 (Sep 8, 2010)
+- Minor bug-fixes and refactorings 
+  (e.g., renaming Kieker.Tpmon/Tpan->Kieker.Monitoring/Analysis )
+- Further enancements to trace analysis tool
+  (e.g., analysis and visualization features providing software 
+   assembly- and deployment-level views)
+- Improved documentation, e.g., brand-new user guide with examples!
+- Improved Windows support (e.g., wrapper scripts)
+
+* 1.1 (March 04, 2010)
+- Improved implementation of trace analysis tool
+  - internal meta-model, on-the-fly trace reconstruction, ...
+  - Analysis features: Output of reconstructed system model, computation 
+    of trace equivalence classes, ...
+  - Enhaced visualization features, e.g.,
+    - hierarchical dependency graphs (operation-, component-, container-level), 
+    - call graphs
+
+* 1.0 (Nov 18, 2009)
+- Minor changes to Kieker's architecture
+- Bug fixes
+
+* 0.95a (Jul 09, 2009)
+- Considerable improvements to Kieker's architecture, e.g.
+  - Generalized/extensible monitoring record model (more than executions)
+  - Generalized/extensible writer model (more than database and filesystem)
+  - Integration of monitoring and analysis data model
+- Major refactorings
+- First release containing core parts of the analysis component Tpan
+
+* 0.91 (Apr 27, 2009)
+- Aspects are in @Aspect style
+- Adapted to operate with Java 6
+- Maven build support
+- Monitoring support for the spring framework with soap, CXF WebService stuff
+- More efficient internal data structures and processing
+- Distributed monitoring
+
+* 0.6 (Jul 30, 2008)
+- Added a new test for load-time weaving without Java annotation using full 
+  instrumentation
+
+* 0.5 (May 08, 2008)
+- first sourceforge release

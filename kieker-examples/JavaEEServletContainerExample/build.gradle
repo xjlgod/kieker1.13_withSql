@@ -1,0 +1,28 @@
+apply plugin: 'war'
+
+sourceSets {
+  main { 
+    java { 
+      srcDir 'livedemo-source/src' 
+    } 
+  }
+}
+
+webAppDirName = 'livedemo-source/WebContent'
+
+dependencies {
+  compile fileTree('livedemo-source/lib') {
+    include '*.jar'
+  }
+}
+
+task unwar(type: Copy) {
+  from war
+  into 'jetty/webapps'
+  rename '(.*).war', 'livedemo.war'
+}
+
+task buildExample(dependsOn: [war, unwar]) {
+  doLast {
+  }
+}
