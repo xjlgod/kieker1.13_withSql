@@ -16,6 +16,7 @@
 
 package kieker.monitoring.probe.aspectj.flow.operationCallObject;
 
+import kieker.common.record.flow.trace.operation.object.CallOperationObjectEventExtend;
 import org.aspectj.lang.JoinPoint.EnclosingStaticPart;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -75,17 +76,22 @@ public abstract class AbstractAspect extends AbstractAspectJProbe {
 		// callee
 		final String calleeClazz = targetObject.getClass().getName();
 		final int calleeObject = System.identityHashCode(targetObject);
-		// measure before call
-		CTRLINST.newMonitoringRecord(new CallOperationObjectEvent(TIME.getTime(), traceId, trace.getNextOrderId(), caller, callerClazz, callee, calleeClazz,
-				callerObject, calleeObject));
+		// measure before
+		final long tin = TIME.getTime();
 		// call of the called method
 		final Object retval;
 		try {
 			retval = thisJoinPoint.proceed();
 		} finally {
+			// measure after
+			final long tout = TIME.getTime();
+			// measure  call
+			CTRLINST.newMonitoringRecord(new CallOperationObjectEventExtend(TIME.getTime(), traceId, trace.getNextOrderId(), caller, callerClazz, callee, calleeClazz,
+					callerObject, calleeObject,0,0,tin,tout));
 			if (newTrace) { // close the trace
 				TRACEREGISTRY.unregisterTrace();
 			}
+
 		}
 		return retval;
 	}
@@ -115,14 +121,20 @@ public abstract class AbstractAspect extends AbstractAspectJProbe {
 		// callee
 		final String calleeClazz = targetObject.getClass().getName();
 		final int calleeObject = System.identityHashCode(targetObject);
-		// measure before call
-		CTRLINST.newMonitoringRecord(new CallOperationObjectEvent(TIME.getTime(), traceId, trace.getNextOrderId(), caller, callerClazz, callee, calleeClazz, 0,
-				calleeObject));
+
+		// measure before
+		final long tin = TIME.getTime();
+
 		// call of the called method
 		final Object retval;
 		try {
 			retval = thisJoinPoint.proceed();
 		} finally {
+			// measure after
+			final long tout = TIME.getTime();
+			// measure  call
+			CTRLINST.newMonitoringRecord(new CallOperationObjectEventExtend(TIME.getTime(), traceId, trace.getNextOrderId(), caller, callerClazz, callee, calleeClazz,
+					0, calleeObject,0,0,tin,tout));
 			if (newTrace) { // close the trace
 				TRACEREGISTRY.unregisterTrace();
 			}
@@ -155,14 +167,19 @@ public abstract class AbstractAspect extends AbstractAspectJProbe {
 		final int callerObject = System.identityHashCode(thisObject);
 		// callee
 		final String calleeClazz = calleeSig.getDeclaringTypeName();
-		// measure before call
-		CTRLINST.newMonitoringRecord(new CallOperationObjectEvent(TIME.getTime(), traceId, trace.getNextOrderId(), caller, callerClazz, callee, calleeClazz,
-				callerObject, 0));
+		// measure before
+		final long tin = TIME.getTime();
+
 		// call of the called method
 		final Object retval;
 		try {
 			retval = thisJoinPoint.proceed();
 		} finally {
+			// measure after
+			final long tout = TIME.getTime();
+			// measure  call
+			CTRLINST.newMonitoringRecord(new CallOperationObjectEventExtend(TIME.getTime(), traceId, trace.getNextOrderId(), caller, callerClazz, callee, calleeClazz,
+					callerObject, 0,0,0,tin,tout));
 			if (newTrace) { // close the trace
 				TRACEREGISTRY.unregisterTrace();
 			}
@@ -195,13 +212,19 @@ public abstract class AbstractAspect extends AbstractAspectJProbe {
 		final String callerClazz = callerSig.getDeclaringTypeName();
 		// callee
 		final String calleeClazz = calleeSig.getDeclaringTypeName();
-		// measure before call
-		CTRLINST.newMonitoringRecord(new CallOperationObjectEvent(TIME.getTime(), traceId, trace.getNextOrderId(), caller, callerClazz, callee, calleeClazz, 0, 0));
-		// call of the called method
+
+		// measure before
+		final long tin = TIME.getTime();
+
 		final Object retval;
 		try {
 			retval = thisJoinPoint.proceed();
 		} finally {
+			// measure after
+			final long tout = TIME.getTime();
+			// measure  call
+			CTRLINST.newMonitoringRecord(new CallOperationObjectEventExtend(TIME.getTime(), traceId, trace.getNextOrderId(), caller, callerClazz, callee, calleeClazz,
+					0, 0,0,0,tin,tout));
 			if (newTrace) { // close the trace
 				TRACEREGISTRY.unregisterTrace();
 			}

@@ -13,31 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+package kieker.common.record.flow.trace.operation;
 
-package kieker.monitoring.probe.aspectj.flow.operationExecutionObject;
 
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import kieker.common.record.factory.IRecordFactory;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Jan Waller
  * 
  * @since 1.6
  */
-@Aspect
-public class FullInstrumentationNoGetterAndSetter extends AbstractAspect {
-
-	/**
-	 * Default constructor.
-	 */
-	public FullInstrumentationNoGetterAndSetter() {
-		// empty default constructor
-	}
-
-
+public final class AfterOperationEventWithSqlFactory implements IRecordFactory<AfterOperationEventWithSql> {
+	
+	
 	@Override
-	@Pointcut("execution(* *(..)) && noGetterAndSetter()")
-	public void monitoredOperation() {
-		// Aspect Declaration (MUST be empty)
+	public AfterOperationEventWithSql create(final IValueDeserializer deserializer) {
+		return new AfterOperationEventWithSql(deserializer);
+	}
+	
+	@Override
+	@Deprecated
+	public AfterOperationEventWithSql create(final Object[] values) {
+		return new AfterOperationEventWithSql(values);
+	}
+	
+	public int getRecordSizeInBytes() {
+		return AfterOperationEventWithSql.SIZE;
 	}
 }

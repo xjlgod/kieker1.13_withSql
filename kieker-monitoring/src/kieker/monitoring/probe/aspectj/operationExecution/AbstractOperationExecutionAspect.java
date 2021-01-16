@@ -94,7 +94,7 @@ public abstract class AbstractOperationExecutionAspect extends AbstractAspectJPr
 		} finally {
 			// measure after
 			final long tout = TIME.getTime();
-			CTRLINST.newMonitoringRecord(new OperationExecutionRecord(signature, sessionId, traceId, tin, tin, hostname, eoi, ess));
+			CTRLINST.newMonitoringRecord(new OperationExecutionRecord(signature, sessionId, traceId, tin, tout, hostname, eoi, ess));
 			// cleanup
 			if (entrypoint) {
 				CFREGISTRY.unsetThreadLocalTraceId();

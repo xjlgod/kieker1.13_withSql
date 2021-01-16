@@ -161,7 +161,7 @@ public abstract class AbstractPlugin extends AbstractAnalysisComponent implement
 
 	/**
 	 * Delivers the given data to all registered input ports of the given output port.
-	 * 
+	 *
 	 * @param outputPortName
 	 *            The output port to be used to send the given data.
 	 * @param data

@@ -16,12 +16,12 @@
 
 package kieker.monitoring.probe.aspectj.flow.operationCallObject;
 
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+		import org.aspectj.lang.annotation.Aspect;
+		import org.aspectj.lang.annotation.Pointcut;
 
 /**
  * @author Jan Waller
- * 
+ *
  * @since 1.6
  */
 @Aspect
@@ -33,9 +33,20 @@ public class FullInstrumentation extends AbstractAspect {
 	public FullInstrumentation() {
 		// empty default constructor
 	}
+	@Pointcut("!call(* java..*(..)) && !call(java..*.new(..))")
+	public void notJava(){
 
+	}
+	/**
+	 * (call(* *(..)) || call(new(..)))&& !within(java.lang..*) have try, but don't work
+	 * (call(* *(..)) || call(new(..)))&& !call(* java..*(..)) exclude all method under java..
+	 * (call(* *(..)) || call(new(..)))&& !call(* java..*(..)) && !call(java..*.new(..)) work
+	 * (call(* *(..)) || call(new(..)))&& !call(* java..*(..)) && !call(*StringBuilder.new(..)) work
+	 * (call(* *(..)) || call(new(..)))&& !call(* java..*(..)) && !call(java.lang.StringBuilder.new(..)) full match work
+	 * (call(* *(..)) || call(new(..)))&& !call(* java..*(..)) && !call(java.*.new(..)) fail
+	 */
 	@Override
-	@Pointcut("execution(* *(..)) || execution(new(..))")
+	@Pointcut("(call(* *(..)) || call(new(..)))&& !call(* java..*(..)) && !call(java..*.new(..)) &&  notJava()")
 	public void monitoredOperation() {
 		// Aspect Declaration (MUST be empty)
 	}

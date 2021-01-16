@@ -16,51 +16,45 @@
 
 package kieker.monitoring.probe.spring.flow;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-
 import kieker.common.record.flow.trace.TraceMetadata;
-import kieker.common.record.flow.trace.operation.AfterOperationEvent;
-import kieker.common.record.flow.trace.operation.AfterOperationFailedEvent;
-import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
+import kieker.common.record.flow.trace.operation.*;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.core.registry.TraceRegistry;
 import kieker.monitoring.probe.IMonitoringProbe;
 import kieker.monitoring.timer.ITimeSource;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 
 /**
- * @author Nils Christian Ehmke, Jan Waller
+ * @author xjl
  * 
  * @since 1.8
  */
-public class OperationExecutionMethodInvocationInterceptor implements MethodInterceptor, IMonitoringProbe {
+public class OperationExecutionMethodWithSqlInvocationInterceptor implements MethodInterceptor, IMonitoringProbe {
 
-	//日志仓库
 	private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
 
-	//日志控制器
 	private final IMonitoringController monitoringCtrl;
-	//时间戳
 	private final ITimeSource timeSource;
 
-	public OperationExecutionMethodInvocationInterceptor() {
+	public OperationExecutionMethodWithSqlInvocationInterceptor() {
 		this(MonitoringController.getInstance());
 	}
 
 	/**
 	 * This constructor is mainly used for testing, providing a custom {@link IMonitoringController} instead of using the singleton instance.
-	 * 
+	 *
 	 * @param monitoringController
 	 *            must not be null
 	 */
-	public OperationExecutionMethodInvocationInterceptor(final IMonitoringController monitoringController) {
+	public OperationExecutionMethodWithSqlInvocationInterceptor(final IMonitoringController monitoringController) {
 		this.monitoringCtrl = monitoringController;
 		this.timeSource = this.monitoringCtrl.getTimeSource();
 	}
 
 	/**
-	 * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
+	 * @see MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
 	 */
 	@Override
 	public Object invoke(final MethodInvocation invocation) throws Throwable { // NOCS (IllegalThrowsCheck)
@@ -71,6 +65,9 @@ public class OperationExecutionMethodInvocationInterceptor implements MethodInte
 		if (!this.monitoringCtrl.isProbeActivated(signature)) {
 			return invocation.proceed();
 		}
+
+		//暂时的sql表名字
+		String tableName = "xjl";
 		// common fields
 		TraceMetadata trace = TRACEREGISTRY.getTrace();
 		final boolean newTrace = trace == null;
@@ -83,12 +80,14 @@ public class OperationExecutionMethodInvocationInterceptor implements MethodInte
 
 		// measure before execution
 		//前消息
-		this.monitoringCtrl.newMonitoringRecord(new BeforeOperationEvent(this.timeSource.getTime(), traceId, trace.getNextOrderId(), signature, clazz));
+		this.monitoringCtrl.newMonitoringRecord(new BeforeOperationEventWithSql(this.timeSource.getTime(), traceId, trace.getNextOrderId(), signature, clazz,tableName));
 		// execution of the called method
 		final Object retval;
 		try {
 			retval = invocation.proceed();
-		} catch (final Throwable th) { // NOPMD NOCS (catch throw might ok here)
+		} catch (final Throwable th) {
+			//这一部分暂时延续以前的失败方法
+			// NOPMD NOCS (catch throw might ok here)
 			// measure after failed execution
 			this.monitoringCtrl.newMonitoringRecord(new AfterOperationFailedEvent(this.timeSource.getTime(), traceId, trace.getNextOrderId(), signature, clazz,
 					th.toString()));
@@ -99,7 +98,7 @@ public class OperationExecutionMethodInvocationInterceptor implements MethodInte
 			}
 		}
 		// measure after successful execution
-		this.monitoringCtrl.newMonitoringRecord(new AfterOperationEvent(this.timeSource.getTime(), traceId, trace.getNextOrderId(), signature, clazz));
+		this.monitoringCtrl.newMonitoringRecord(new AfterOperationEventWithSql(this.timeSource.getTime(), traceId, trace.getNextOrderId(), signature, clazz,tableName));
 		return retval;
 	}
 }

@@ -78,7 +78,7 @@ public abstract class AbstractAspect extends AbstractAspectJProbe {
 		final long traceId = trace.getTraceId();
 		final String clazz = thisObject.getClass().getName();
 		final int objectId = System.identityHashCode(thisObject);
-		// measure before execution
+		// measure before execution 构造函数的前一部分写入
 		CTRLINST.newMonitoringRecord(new BeforeConstructorObjectEvent(TIME.getTime(), traceId, trace.getNextOrderId(), operationSignature, clazz, objectId));
 		// execution of the called method
 		final Object retval;
@@ -94,7 +94,7 @@ public abstract class AbstractAspect extends AbstractAspectJProbe {
 				TRACEREGISTRY.unregisterTrace();
 			}
 		}
-		// measure after successful execution
+		// measure after successful execution 构造函数的后一部分写入
 		CTRLINST.newMonitoringRecord(new AfterConstructorObjectEvent(TIME.getTime(), traceId, trace.getNextOrderId(), operationSignature, clazz, objectId));
 		return retval;
 	}
